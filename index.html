@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0c13" />
+  <title>Nota AI — мысли в порядке</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">✦</div><div><strong>nota<span class="brand-accent">.</span></strong><small>Твой второй мозг</small></div></div>
+    <button class="sidebar-create" id="sidebarCreate"><span class="plus">＋</span> Новая заметка <span class="shortcut">N</span></button>
+    <div class="nav-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+    <nav class="nav-list" aria-label="Навигация">
+      <button class="nav-btn is-active" data-view="all"><span class="nav-icon">▦</span> Все заметки <span class="nav-count" id="navAllCount">0</span></button>
+      <button class="nav-btn" data-view="favorites"><span class="nav-icon">☆</span> Избранное</button>
+      <button class="nav-btn" data-view="deadlines"><span class="nav-icon">◷</span> Дедлайны <span class="nav-dot"></span></button>
+    </nav>
+    <div class="nav-label folder-header">ПАПКИ</div>
+    <nav class="nav-list" aria-label="Папки">
+      <button class="nav-btn folder-btn" data-folder="Учёба"><span class="folder-icon blue">■</span> Учёба</button>
+      <button class="nav-btn folder-btn" data-folder="Проекты"><span class="folder-icon purple">■</span> Проекты</button>
+      <button class="nav-btn folder-btn" data-folder="Личное"><span class="folder-icon yellow">■</span> Личное</button>
+      <button class="nav-btn folder-btn" data-folder="Идеи"><span class="folder-icon green">■</span> Идеи</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="tip-mini"><span>✧</span><div><strong>Немного магии</strong><p>Попроси AI разложить заметки по папкам</p></div></div>
+      <div class="storage-actions"><button id="exportBtn" title="Скачать резервную копию">↧ Экспорт</button><button id="importBtn" title="Загрузить резервную копию">↥ Импорт</button></div>
+      <input type="file" id="importFile" accept=".json,application/json" hidden />
+      <div class="version">nota ai <span>v1.0 · college edition</span></div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar"><div class="crumb"><span>Рабочее пространство</span><span class="crumb-sep">/</span><strong id="crumbTitle">Все заметки</strong></div><div class="topbar-actions"><span class="today-label" id="todayLabel"></span><button class="icon-btn" id="homeBtn" title="Все заметки">⌂</button></div></header>
+
+    <div id="dashboardView" class="view">
+      <section class="hero"><div class="hero-content"><div class="eyebrow"><span class="sparkle">✦</span> УМНОЕ ПРОСТРАНСТВО ДЛЯ ИДЕЙ</div><h1>Меньше хаоса.<br /><em>Больше ясности.</em></h1><p>Заметки, задачи и идеи — в одном месте.<br/>Порядок наведёт твой AI-ассистент.</p><button id="heroCreate" class="primary-btn">＋ Создать заметку</button></div><div class="hero-orbit" aria-hidden="true"><div class="orbit-ring one"></div><div class="orbit-ring two"></div><div class="orbit-inner">✦</div><span class="float-symbol fs1">#</span><span class="float-symbol fs2">✓</span><span class="float-symbol fs3">⌗</span></div></section>
+      <div class="stats" id="stats"></div>
+      <section class="section-heading"><div><div class="tiny-label" id="sectionOverline">ТВОЁ ПРОСТРАНСТВО</div><h2 id="sectionTitle">Последние заметки</h2></div><div class="section-tools"><label class="search-field"><span>⌕</span><input id="searchInput" placeholder="Поиск заметок..." aria-label="Поиск заметок" /></label><button class="secondary-btn" id="newFromList">＋ Новая</button></div></section>
+      <div class="notes-grid" id="notesGrid"></div>
+      <div class="deadlines-section" id="miniDeadlinesSection"><div class="section-heading compact"><div><div class="tiny-label">НЕ УПУСТИ ВАЖНОЕ</div><h2>Ближайшие дедлайны</h2></div><button class="subtle-action" id="viewDeadlines">Все дедлайны →</button></div><div id="miniDeadlines"></div></div>
+    </div>
+
+    <section id="editorView" class="editor-view hidden" aria-label="Редактор заметки">
+      <div class="editor-top"><button class="back-btn" id="backBtn">← <span>К заметкам</span></button><div class="editor-actions"><span id="savedIndicator">● Сохранено</span><button class="icon-btn star-btn" id="favoriteBtn" title="В избранное">☆</button><button class="danger-outline" id="deleteBtn">Удалить</button></div></div>
+      <input class="note-title-input" id="noteTitle" placeholder="Без названия" aria-label="Название заметки" maxlength="120" />
+      <div class="meta-row"><label><span class="meta-label">Папка</span><select id="noteFolder"><option>Учёба</option><option>Проекты</option><option>Личное</option><option>Идеи</option></select></label><label><span class="meta-label">Дедлайн</span><input type="date" id="noteDeadline" /></label><label class="tags-label"><span class="meta-label">Теги (через запятую)</span><input id="noteTags" placeholder="например: экзамен, важно" /></label></div>
+      <div class="editor-caption"><div><strong>Содержимое</strong><span>Markdown · таблицы, чек-листы и заголовки</span></div><div class="edit-modes"><button id="modeEdit" class="mode-btn is-current">Редактор</button><button id="modeSplit" class="mode-btn">Рядом</button><button id="modePreview" class="mode-btn">Просмотр</button></div></div>
+      <div class="editor-panel" id="editorPanel"><div class="edit-column"><div class="toolbar"><button data-insert="heading" title="Заголовок">H</button><button data-insert="bold" title="Жирный"><b>B</b></button><button data-insert="list" title="Список">☷</button><button data-insert="check" title="Чек-лист">☑</button><button data-insert="table" title="Таблица">▦ Таблица</button></div><textarea id="noteContent" spellcheck="true" aria-label="Содержимое Markdown" placeholder="Начни писать здесь...\n\n# Заголовок\n- [ ] Задача\n\n| Тема | Статус |\n| --- | --- |\n| Проект | В процессе |"></textarea></div><div class="preview-column" id="previewColumn"><div class="preview-label">ПРЕДПРОСМОТР</div><div class="markdown" id="markdownPreview"></div></div></div>
+      <div class="editor-hint"><span>⌘</span> Все изменения сохраняются автоматически в этом браузере. Для переноса используй «Экспорт».</div>
+    </section>
+  </main>
+
+  <aside class="ai-panel"><div class="ai-panel-top"><div class="ai-badge">✦</div><div><strong>Nota Assistant</strong><div class="ai-subtitle">Твой помощник по порядку</div></div><span class="online-dot" title="Доступно"></span></div>
+    <div class="ai-scroll" id="aiScroll"><div class="assistant-intro"><div class="assistant-avatar">✦</div><h3>Привет! Я на связи 👋</h3><p>Могу создать заметку, структурировать записи, расставить теги и назначить дедлайны. Просто напиши, что нужно.</p></div><div class="suggestions"><div class="suggestion-label">ПОПРОБУЙ СПРОСИТЬ</div><button class="suggestion" data-prompt="Разложи мои заметки по папкам и добавь подходящие теги"><span>◈</span><span>Разложи заметки по папкам</span><span>↗</span></button><button class="suggestion" data-prompt="Создай заметку План подготовки к экзамену с таблицей"><span>▦</span><span>Создай план с таблицей</span><span>↗</span></button><button class="suggestion" data-prompt="Какие у меня ближайшие дедлайны?"><span>◷</span><span>Покажи мои дедлайны</span><span>↗</span></button></div><div id="chatHistory" class="chat-history"></div><div id="proposalBox"></div></div>
+    <div class="ai-bottom"><div class="ai-mode" id="aiMode">● Деморежим: локальные команды</div><form id="aiForm" class="ai-compose"><textarea id="aiPrompt" rows="2" placeholder="Например, поставь дедлайн на 25 ноября..." aria-label="Команда для ассистента"></textarea><button type="submit" id="sendAiBtn" title="Отправить">↑</button></form><p class="ai-disclaimer">AI предлагает изменения — ты подтверждаешь их сам.</p></div>
+  </aside>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="app.js" defer></script>
+</body>
+</html>
